@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.telecom.Call;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
-        queryProvince();
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,25 +118,29 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
+
         queryProvince();
     }
     /**
      * 查询全国所有的省，优先从数据库查询，如果没有再到服务器查询
      */
     private void queryProvince(){
+
         titleText.setText("中国");
         backButton.setVisibility(View.GONE);
         provinceList= DataSupport.findAll(Province.class);
         if (provinceList.size()>0){
             dataList.clear();
+            System.out.println(dataList.toString()+1);
             for (Province province : provinceList){
                 dataList.add(province.getProvinceName());
             }
+            System.out.println(dataList.toString());
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel=LEVEL_PROVINCE;
         }else {
-            String adress="http://goulin.tech/api/china";
+            String adress="http://guolin.tech/api/china";
             queryFromServer(adress,"province");
             }
         }
@@ -145,7 +150,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities(){
         titleText.setText(selectdProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        cityList=DataSupport.where("province=?",String.valueOf(selectdProvince.getId())).find(City.class);
+        cityList=DataSupport.where("provinceId=?",String.valueOf(selectdProvince.getId())).find(City.class);
         if (cityList.size()>0){
             dataList.clear();
             for (City city:cityList){
@@ -155,8 +160,10 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel=LEVEL_CITY;
         }else {
-            int provinceCode=selectdProvince.getProvinceCode();
-            String address="http://guolin.tech/api/china"+provinceCode;
+            int provinceCode=selectdProvince.getId();
+
+            String address="http://guolin.tech/api/china"+"/"+provinceCode;
+
             queryFromServer(address,"city");
         }
 
@@ -167,7 +174,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCountry(){
         titleText.setText(selectdCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countryList=DataSupport.where("city=?",String.valueOf(selectdCity.getId())).find(Country.class);
+        countryList=DataSupport.where("cityId=?",String.valueOf(selectdCity.getId())).find(Country.class);
         if (countryList.size()>0){
             dataList.clear();
             for (Country country:countryList){
@@ -188,6 +195,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryFromServer(String adress,final String type){
         showProgressDiolog();
+
         HttpUtil.sendOkHttpRequest(adress, new Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
@@ -203,7 +211,8 @@ public class ChooseAreaFragment extends Fragment {
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
-                String responseText=response.body().toString();
+
+                String responseText=response.body().string();//okhttp3链接必须要的一步。转换成String，不能调用tostring方法,因为toString是String特有的方法，你还不是String类、
                 boolean result=false;
                 if ("province".equals(type)){
                     result= Utilty.handleProvinceResponse(responseText);
