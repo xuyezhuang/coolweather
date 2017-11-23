@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.xuyezhuangt5000.coolweather.MainActivity;
 import com.example.xuyezhuangt5000.coolweather.R;
 import com.example.xuyezhuangt5000.coolweather.WeatherActiviy;
 import com.example.xuyezhuangt5000.coolweather.db.City;
@@ -101,10 +102,18 @@ public class ChooseAreaFragment extends Fragment {
                     queryCountry();
                 }else if (currentLevel==LEVEL_COUNTRY){
                     String weatherId=countryList.get(i).getWeatherId();
-                    Intent intent=new Intent(getActivity(), WeatherActiviy.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if (getActivity()instanceof MainActivity){//如果是在MainActivity正常进行
+                        Intent intent=new Intent(getActivity(), WeatherActiviy.class);
+                        intent.putExtra("weather_id",weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if (getActivity()instanceof WeatherActiviy){//如果是在WeatherActivity中作为侧滑出来的控件调用的话当点击具体县级市的时候关闭侧滑调用上拉刷新天气数据
+                        WeatherActiviy activiy=(WeatherActiviy)getActivity();
+                        activiy.drawerLayout.closeDrawers();
+                        activiy.swipeRefreshLayout.setRefreshing(true);
+                        activiy.requestWeather(weatherId);
+                    }
+
                 }
             }
         });
