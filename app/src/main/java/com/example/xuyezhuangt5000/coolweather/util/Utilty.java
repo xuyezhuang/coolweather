@@ -1,12 +1,12 @@
 package com.example.xuyezhuangt5000.coolweather.util;
 
 import android.text.TextUtils;
-import android.view.View;
 
 import com.example.xuyezhuangt5000.coolweather.db.City;
 import com.example.xuyezhuangt5000.coolweather.db.Country;
 import com.example.xuyezhuangt5000.coolweather.db.Province;
-import com.google.gson.JsonObject;
+import com.example.xuyezhuangt5000.coolweather.gson.HeWeather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,5 +83,16 @@ public class Utilty {
             }
         }
         return false;
+    }
+    public static HeWeather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String WeatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(WeatherContent,HeWeather.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

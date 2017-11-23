@@ -1,15 +1,13 @@
 package fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.telecom.Call;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.xuyezhuangt5000.coolweather.R;
+import com.example.xuyezhuangt5000.coolweather.WeatherActiviy;
 import com.example.xuyezhuangt5000.coolweather.db.City;
 import com.example.xuyezhuangt5000.coolweather.db.Country;
 import com.example.xuyezhuangt5000.coolweather.db.Province;
@@ -26,13 +25,9 @@ import com.example.xuyezhuangt5000.coolweather.util.Utilty;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeoutException;
 
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -104,6 +99,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectdCity = cityList.get(i);
                     queryCountry();
+                }else if (currentLevel==LEVEL_COUNTRY){
+                    String weatherId=countryList.get(i).getWeatherId();
+                    Intent intent=new Intent(getActivity(), WeatherActiviy.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -131,11 +132,11 @@ public class ChooseAreaFragment extends Fragment {
         provinceList= DataSupport.findAll(Province.class);
         if (provinceList.size()>0){
             dataList.clear();
-            System.out.println(dataList.toString()+1);
+
             for (Province province : provinceList){
                 dataList.add(province.getProvinceName());
             }
-            System.out.println(dataList.toString());
+
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel=LEVEL_PROVINCE;

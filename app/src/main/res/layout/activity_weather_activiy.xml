@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimary"
+    android:layout_height="match_parent">
+    <!--Framelayout针布局，所有布局都是从左上角开始，控件之间重叠，所有无需做什么位置或者背景添加，imgview布满了全局，scrollview覆盖在上面-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:id="@+id/bing_pic_img"
+        />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/weather_layout"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        >
+        <!--android:fitsSystemWindows="true"当已经设置去掉了系统状态栏的空间之后加上这句会再次为系统腾出适当的空间，想单于paddingTop=24或者25-->
+        <LinearLayout
+            android:fitsSystemWindows="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <include layout="@layout/title"></include>
+            <include layout="@layout/now"></include>
+            <include layout="@layout/forecast"></include>
+            <include layout="@layout/aqi"></include>
+            <include layout="@layout/suggestion"></include>
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>
